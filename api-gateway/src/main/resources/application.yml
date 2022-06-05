@@ -1,0 +1,41 @@
+eureka:
+  client:
+    service-url:
+      default-zone: http://localhost:8761/eureka
+logging:
+  level:
+    root: info
+    org.springframework.web: error
+    com.genehcj.apigateway: info
+    org.hibernate: error
+    
+server:
+  port: 9000
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      routes:
+#       Product Service Route
+      - id: product-service
+        predicates:
+        - Path=/api/product
+        uri: lb://product-service
+#       Order Servcie Route
+      - id: order-service
+        predicates:
+        - Path=/api/order
+        uri: lb://order-service
+#       Discovery Server Route
+      - id: discovery-server
+        predicates:
+        - Path=/eureka/web
+        uri: http://localhost:8761
+        filters:
+        - SetPath=/
+#       Discovery Server Static Resources Route 
+      - id: discovery-server-static
+        predicates:
+        - Path=/eureka/**
+        uri: http://localhost:8761
